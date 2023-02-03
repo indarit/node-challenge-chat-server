@@ -3,6 +3,7 @@ const cors = require("cors");
 const app = express();
 app.use(cors());
 const bodyParser = require("body-parser");
+const { text } = require("express");
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -24,14 +25,34 @@ app.get("/", function (request, response) {
 app.get("/messages", function (request, response) {
   response.status(200).json(messages);
 });
+app.get("/messages/search", (req, res)) => {
+  const textQuery = req.query.text;
+  if (textQuery != null) {
+    return res.send(404)
 
+  // colocar un if que valide que el textQuery viene vacio
+  //const textQuery = req.query.text;
+    //  const search = messages.filter((element) =>
+    //   element.text.toLowerCase().includes(textQuery)
+    //  );
+let resul = [];
+for (const obj of messages) {
+  console.log(obj);
+  if (obj.text.toLocaleLowerCase().includes(textQuery.toLocaleLowerCase()))
+    resul.push(obj);
+  }
+  res.send(resul);
+}};
+     //res.send(search);
+
+    
 app.get("/messages/:messages_id", (request, response) => {
   const messagesId = request.params.messages_id;
   const result = messages.find((q) => q.id == messagesId);
   if (result) {
     response.status(200).json(result);
   } else {
-    response.status(404).send("Not Found");
+    response.status(404).send("Not Found 0");
   }
 });
 
@@ -64,9 +85,10 @@ app.delete("/messages/:messages_id", (request, response) => {
     messages.splice(messagesId, 1);
     response.status(200).json(messages);
   } else {
-    response.status(404).send("Not Found");
+    response.status(404).send("Not Found 1");
   }
 });
+
 app.listen(3000, () => {
   console.log("Listening on port 3000");
 });
